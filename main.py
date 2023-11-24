@@ -12,7 +12,7 @@ from sklearn.preprocessing import MinMaxScaler
 start = dt.datetime(2017, 1,1)
 end = dt.datetime(2024, 1, 1)
 
-st.title('Cryptocurrency Trend Prediction')
+st.title('Crypto Predicto by Dan The Nguyen')
 
 user_input = st.selectbox("Select Cryptocurrency:", ('BTC', 'ETH', 'DOGE', 'SOL'))
 
