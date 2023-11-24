@@ -12,54 +12,39 @@ from sklearn.preprocessing import MinMaxScaler
 start = dt.datetime(2017, 1,1)
 end = dt.datetime(2024, 1, 1)
 
-st.title('Stock Trend Prediction')
+st.title('Cryptocurrency Trend Prediction')
 
 user_input = st.selectbox("Select Cryptocurrency:", ('BTC', 'ETH', 'DOGE', 'SOL'))
 
-# Check if user input is 'yahoo'
-if user_input.lower() == 'yahoo':
-    st.warning("Please enter a valid stock ticker other than 'yahoo'.")
-else:
-    # Fetch data using yfinance
-    crypto = yf.download(user_input + "-USD", start = start, end = end)
+# Fetch data using yfinance
+crypto = yf.download(user_input + "-USD", start = start, end = end)
 
-    # Describing Data
-    st.subheader('Data from 2017 - 2023')
-    st.write(crypto.describe())
-    st.write(crypto.tail(20))
+# Describing Data
+st.subheader('Data from 2017 - 2023')
+st.write(crypto.describe())
+st.write(crypto.tail(20))
 
 
-    #Visualization
-    st.subheader('Close Price')
-    fig = plt.figure(figsize = (12,6))
-    plt.plot(crypto['Close'])
-    st.pyplot(fig)
+#Visualization
+st.subheader('Close Price')
+fig = plt.figure(figsize = (12,6))
+plt.plot(crypto['Close'])
+st.pyplot(fig)
 
-    # Spliting the datatset into Training and Testing
-    # data_training = pd.DataFrame(df['Close'][0:int(len(df) * 0.7)])
-    # data_testing = pd.DataFrame(df['Close'][int(len(df) * 0.7): int(len(df))])
+#Creat a new dataframe with only Close Price
+data = crypto.filter(['Close'])
+#Convert the dataframe to numpy array
+dataset = data.values
+# Get the number of rows to train the model on. we need this number to create our train and test sets
+# math.ceil will round up the number
+training_data_len = math.ceil(len(dataset) * .9) # We are using 90% of the data for training
 
-    # print(data_training.shape)
-    # print(data_testing.shape)
+# Scale the data
+scaler = MinMaxScaler(feature_range=(0,1))
+scaled_data = scaler.fit_transform(dataset)
 
-    # # MinMaxScaler
-    # scaler = MinMaxScaler(feature_range=(0, 1))
-    # training_data_len = scaler.fit_transform(data_training)
-
-    #Creat a new dataframe with only Close Price
-    data = crypto.filter(['Close'])
-    #Convert the dataframe to numpy array
-    dataset = data.values
-    # Get the number of rows to train the model on. we need this number to create our train and test sets
-    # math.ceil will round up the number
-    training_data_len = math.ceil(len(dataset) * .9) # We are using 90% of the data for training
-
-    # Scale the data
-    scaler = MinMaxScaler(feature_range=(0,1))
-    scaled_data = scaler.fit_transform(dataset)
-
-    #Load model
-    model = load_model('model_' + user_input + '.h5')
+#Load model
+model = load_model('model_' + user_input + '.h5')
 
 #Testing Part
 test_data = scaled_data[training_data_len - 60 : , :]
@@ -74,13 +59,6 @@ for i in range(60, len(test_data)):
 X_test = np.array(X_test)
 # Reshape the test data
 X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
-
-# Making Predictions
-# y_predicted = model.predict(X_test)
-
-# scale_factor = 1 / scaler[0]
-# y_predicted = y_predicted * scale_factor
-# y_test = y_test * scale_factor
 
 #Get the last 60 day closing price values and convert the datadrame to an array
 last_60_days = data[-60:].values
