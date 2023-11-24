@@ -52,16 +52,14 @@ else:
     dataset = data.values
     # Get the number of rows to train the model on. we need this number to create our train and test sets
     # math.ceil will round up the number
-    training_data_len = math.ceil(len(dataset) * .8) # We are using %80 of the data for training
+    training_data_len = math.ceil(len(dataset) * .9) # We are using 90% of the data for training
 
     # Scale the data
     scaler = MinMaxScaler(feature_range=(0,1))
     scaled_data = scaler.fit_transform(dataset)
-   
-
 
     #Load model
-    model = load_model('model_bitcoin.h5')
+    model = load_model('model_' + user_input + '.h5')
 
 #Testing Part
 test_data = scaled_data[training_data_len - 60 : , :]
@@ -79,11 +77,11 @@ X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
 
 # Making Predictions
 # y_predicted = model.predict(X_test)
-# scaler = scaler.scale_
 
 # scale_factor = 1 / scaler[0]
 # y_predicted = y_predicted * scale_factor
 # y_test = y_test * scale_factor
+
 #Get the last 60 day closing price values and convert the datadrame to an array
 last_60_days = data[-60:].values
 # Scale the data to be values between 0 and 1
@@ -102,13 +100,13 @@ pred_price = model.predict(new_X_test)
 pred_price = scaler.inverse_transform(pred_price)
 
 # Final Graph
-st.subheader('Prediction and Original')
+st.header('Prediction and Original')
 fig2 = plt.figure(figsize=(6, 12))
 plt.plot(y_test, 'b', label='Orignal Price')
 # plt.plot(pred_price, 'r', label='Predicted Price')
-pred_price
-plt.xlabel('Time')
-plt.ylabel('Price')
+st.subheader("Predicted price after 60 days: :blue[" + str(pred_price[0][0]) + "] USD")
+plt.xlabel('Time (Hour)')
+plt.ylabel('Price (USD)')
 plt.legend()
 st.pyplot(fig2)
 
