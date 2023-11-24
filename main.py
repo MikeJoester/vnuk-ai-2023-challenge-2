@@ -14,25 +14,25 @@ end = dt.datetime(2024, 1, 1)
 
 st.title('Stock Trend Prediction')
 
-user_input = st.text_input('Enter Stock Ticker', 'TSLA')
+user_input = st.selectbox("Select Cryptocurrency:", ('BTC', 'ETH', 'DOGE', 'SOL'))
 
 # Check if user input is 'yahoo'
 if user_input.lower() == 'yahoo':
     st.warning("Please enter a valid stock ticker other than 'yahoo'.")
 else:
     # Fetch data using yfinance
-    bitcoin = yf.download(user_input, start=start, end=end)
+    crypto = yf.download(user_input + "-USD", start = start, end = end)
 
     # Describing Data
-    st.subheader('Data from 2017-2023')
-    st.write(bitcoin.describe())
-    st.write(bitcoin.tail(20))
+    st.subheader('Data from 2017 - 2023')
+    st.write(crypto.describe())
+    st.write(crypto.tail(20))
 
 
     #Visualization
     st.subheader('Close Price')
     fig = plt.figure(figsize = (12,6))
-    plt.plot(bitcoin['Close'])
+    plt.plot(crypto['Close'])
     st.pyplot(fig)
 
     # Spliting the datatset into Training and Testing
@@ -47,7 +47,7 @@ else:
     # training_data_len = scaler.fit_transform(data_training)
 
     #Creat a new dataframe with only Close Price
-    data = bitcoin.filter(['Close'])
+    data = crypto.filter(['Close'])
     #Convert the dataframe to numpy array
     dataset = data.values
     # Get the number of rows to train the model on. we need this number to create our train and test sets
@@ -103,7 +103,7 @@ pred_price = scaler.inverse_transform(pred_price)
 
 # Final Graph
 st.subheader('Prediction and Original')
-fig2 = plt.figure(figsize=(6,12))
+fig2 = plt.figure(figsize=(6, 12))
 plt.plot(y_test, 'b', label='Orignal Price')
 # plt.plot(pred_price, 'r', label='Predicted Price')
 pred_price
