@@ -22,4 +22,4 @@ streamlit run main.py
 ```
 
 And the web is deployed, which is similar to this:
-![Crypto Predicto](https://imgur.com/a/SDkWlG7)
+![Crypto Predicto](https://i.imgur.com/UwE2Mpg.png)
